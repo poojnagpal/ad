@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 // Reordering words to ensure HTTP appears right before SSH
 const words = [
+  "HTTP",
   "SSH",
   "Kubernetes", 
   "Postgres",
@@ -13,7 +14,6 @@ const words = [
   "Looker",
   "Clickhouse", 
   "S3",
-  "HTTP",
   "MCP"
 ];
 
@@ -44,19 +44,19 @@ const wordColors = {
   "Metabase": "#509EE3",   // Metabase blue
   "Looker": "#3B82F6",   // Different Blue
   "Clickhouse": "#FFCC00",   // Clickhouse yellow
-  "S3": "#ea384c",   // Dark red (changed back from orange)
+  "S3": "#FF0000",   //  red
   "HTTP": "#000000",   // Black (changed from blue)
   "MCP": "#D4A27F"     // Tan/Light brown
 };
 
 const logos = {
-  "SSH": "/lovable-uploads/820226f2-e48f-4437-9e73-5c01f075f247.png", // Updated SSH logo
+  "SSH": "/lovable-uploads/sshh.png", // Updated SSH logo
   "Kubernetes": "/lovable-uploads/4c93e336-1593-4802-bcff-fb003b163819.png",
   "MySQL": "/lovable-uploads/mysql.svg", // MySQL logo
   "Snowflake": "/lovable-uploads/5fe673da-225f-4271-b883-7f92280d3485.png",
   "BigQuery": "/lovable-uploads/bigquery.svg", // BigQuery logo
   "Clickhouse": "/lovable-uploads/3e472fcd-246e-4baf-9e39-9972f54ba404.png",
-  "S3": "/lovable-uploads/954f2d10-5282-47d8-a2ba-208fc79487d5.png", // Updated S3 logo
+  "S3": "/lovable-uploads/s3.png",
   "Looker": "/lovable-uploads/c9a26d5b-454e-4d36-92fe-3ab8e6e86095.png",
   "Postgres": "/lovable-uploads/a22f748a-8e8a-4fe1-a90d-16b739cabed5.png",
   "Retool": "/lovable-uploads/b8c4ef28-cbb5-4f9b-869d-41ca872b557d.png",
@@ -67,7 +67,7 @@ const logos = {
 
 const WordCarousel = () => {
   // State for carousel operation
-  const [currentIndex, setCurrentIndex] = useState(4);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [showDescription, setShowDescription] = useState(true);
   const [showPlaceholders, setShowPlaceholders] = useState(true);
   
@@ -109,7 +109,7 @@ const WordCarousel = () => {
           
           // Schedule the next rotation
           rotateCarousel();
-        }, 10000); // Increased to 10 seconds
+        }, 7000); // Set to 7 seconds for better readability
       } catch (err) {
         console.error("Error in carousel rotation:", err);
       }
@@ -152,8 +152,10 @@ const WordCarousel = () => {
   const renderCarousel = () => {
     // Ensure we use consistent transform calculations for smoother animations
     // Wrap-around transition should be handled similarly to all other transitions
-    const remValue = 5.0;
-    const transformY = `translateY(calc(-${currentIndex * remValue}rem + ${remValue}rem))`;
+    const remValue = 7.5; // Increased height for larger text
+    // Position the current word in the middle with room for 1 full item on each side
+    // Adjusted to align exactly with "Stop worrying about" text
+    const transformY = `translateY(calc(-${currentIndex * remValue}rem + 18.5rem))`;
     
     // Logging to help debug transitions (especially from last to first)
     React.useEffect(() => {
@@ -161,13 +163,14 @@ const WordCarousel = () => {
     }, [currentIndex, isLastItem]);
     
     return (
-      <div className="carousel-container relative w-full h-[15rem]">
+      <div className="carousel-container relative w-full h-[32rem]">
         <div 
           className="absolute w-full text-left transition-transform ease-in-out"
           style={{ 
             transform: transformY,
             // Increased transition duration for smoother animations
             transitionDuration: '800ms',
+            transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
             background: 'transparent',
             border: 'none',
             boxShadow: 'none'
@@ -175,62 +178,100 @@ const WordCarousel = () => {
         >
           {/* Virtual elements for circular scrolling effect */}
           
-          {/* Last word (MCP) above first word (SSH) for circular effect */}
+          {/* Last word (MCP) above first word (HTTP) for circular effect */}
           <div 
             key={`virtual-last-above-first-${words[words.length - 1]}`}
-            className="h-[5.0rem] flex items-center gap-3 absolute w-full left-0" 
+            className="h-[7.5rem] flex items-center absolute w-full left-0" 
             style={{
-              top: "-5.0rem", // Position above first word with less space
-              // Only show when SSH is current or about to be current
+              top: "-7.5rem", // Position above first word with less space
+              // Only show when HTTP is current or about to be current
               opacity: currentIndex === 0 || currentIndex === words.length - 1 ? 0.3 : 0,
               color: '#8E9196',
               background: 'transparent',
               transform: 'none',
-              transition: 'opacity 600ms ease-in-out, transform 800ms ease-in-out'
+              transition: 'opacity 800ms cubic-bezier(0.4, 0, 0.2, 1), transform 800ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
-            <span className="text-5xl md:text-7xl font-bold min-w-[7rem] inline-block">{words[words.length - 1]}</span>
-            {logos[words[words.length - 1] as keyof typeof logos] && (
-              <img 
-                src={logos[words[words.length - 1] as keyof typeof logos]} 
-                alt={`${words[words.length - 1]} logo`} 
-                className="max-w-[12rem] h-[4.2rem] object-contain ml-0"
-                style={{ 
-                  opacity: 1,
-                  backgroundColor: words[words.length - 1] === "S3" ? 'transparent' : 'inherit',
-                  pointerEvents: 'none' // Prevent any click events
-                }}
-              />
-            )}
+            <div className="flex items-center justify-end" style={{ width: '130px', marginRight: '15px' }}>
+              {logos[words[words.length - 1] as keyof typeof logos] && (
+                <img 
+                  src={logos[words[words.length - 1] as keyof typeof logos]} 
+                  alt={`${words[words.length - 1]} logo`} 
+                  className="max-w-[120px] h-[5rem] object-contain"
+                  style={{ 
+                    opacity: words.length - 1 === currentIndex ? 1 : 0.4, // Reduced opacity for non-current words
+                    backgroundColor: words[words.length - 1] === "S3" || words[words.length - 1] === "SSH" ? 'transparent' : 'inherit',
+                    pointerEvents: 'none', // Prevent any click events
+                    maxHeight: words[words.length - 1] === "Retool" ? '4.8rem' : words[words.length - 1] === "MySQL" ? '4rem' : words[words.length - 1] === "BigQuery" ? '4.1rem' : '5rem', // Custom heights
+                    maxWidth: words[words.length - 1] === "Retool" ? '100px' : words[words.length - 1] === "MySQL" ? '82px' : words[words.length - 1] === "Snowflake" ? '90px' : words[words.length - 1] === "BigQuery" ? '75px' : '100px', // Custom widths
+                    padding: words[words.length - 1] === "BigQuery" ? '6px' : '0', // Special padding for BigQuery logo
+                    marginLeft: words[words.length - 1] === "Kubernetes" || words[words.length - 1] === "Postgres" ? '-10px' : 
+                              words[words.length - 1] === "MySQL" ? '10px' : 
+                              words[words.length - 1] === "Snowflake" ? '-8px' : 
+                              words[words.length - 1] === "BigQuery" ? '-3px' : 
+                              words[words.length - 1] === "Retool" ? '-14px' : '0', // Custom shifts for alignment
+                    filter: words.length - 1 === currentIndex ? 'none' : 'grayscale(60%)' // Apply grayscale to non-current logos
+                  }}
+                />
+              )}
+            </div>
+            <span className="text-6xl md:text-7xl font-bold min-w-[28rem] inline-block" style={{ 
+              marginLeft: words[words.length - 1] === "MySQL" ? '-5px' : 
+                        words[words.length - 1] === "Snowflake" ? '-10px' : 
+                        words[words.length - 1] === "BigQuery" ? '5px' : 
+                        words[words.length - 1] === "Retool" ? '-8px' : 
+                        words[words.length - 1] === "Metabase" || words[words.length - 1] === "Looker" || words[words.length - 1] === "Clickhouse" || words[words.length - 1] === "S3" ? '-5px' : 
+                        words[words.length - 1] === "MCP" ? '-15px' : '-15px', 
+              fontSize: "6rem" 
+            }}>{words[words.length - 1]}</span>
           </div>
           
-          {/* First word (SSH) below last word (MCP) for circular effect */}
+          {/* First word (HTTP) below last word (MCP) for circular effect */}
           <div 
             key={`virtual-first-below-last-${words[0]}`}
-            className="h-[5.0rem] flex items-center gap-3 absolute w-full left-0" 
+            className="h-[7.5rem] flex items-center absolute w-full left-0" 
             style={{
-              top: `${words.length * 5.0}rem`, // Position below last word
+              top: `${words.length * 7.5}rem`, // Position below last word
               // Only show when MCP is current or about to be current
               opacity: currentIndex === words.length - 1 || currentIndex === 0 ? 0.3 : 0,
               color: '#8E9196',
               background: 'transparent',
               transform: 'none',
-              transition: 'opacity 600ms ease-in-out, transform 800ms ease-in-out'
+              transition: 'opacity 800ms cubic-bezier(0.4, 0, 0.2, 1), transform 800ms cubic-bezier(0.4, 0, 0.2, 1)'
             }}
           >
-            <span className="text-5xl md:text-7xl font-bold min-w-[7rem] inline-block">{words[0]}</span>
-            {logos[words[0] as keyof typeof logos] && (
-              <img 
-                src={logos[words[0] as keyof typeof logos]} 
-                alt={`${words[0]} logo`} 
-                className="max-w-[12rem] h-[4.2rem] object-contain ml-0"
-                style={{ 
-                  opacity: 1,
-                  backgroundColor: words[0] === "S3" ? 'transparent' : 'inherit',
-                  pointerEvents: 'none' // Prevent any click events
-                }}
-              />
-            )}
+            <div className="flex items-center justify-end" style={{ width: '130px', marginRight: '15px' }}>
+              {logos[words[0] as keyof typeof logos] && (
+                <img 
+                  src={logos[words[0] as keyof typeof logos]} 
+                  alt={`${words[0]} logo`} 
+                  className="max-w-[120px] h-[5rem] object-contain"
+                  style={{ 
+                    opacity: 0 === currentIndex ? 1 : 0.4, // Reduced opacity for non-current words
+                    backgroundColor: words[0] === "S3" || words[0] === "SSH" ? 'transparent' : 'inherit',
+                    pointerEvents: 'none', // Prevent any click events
+                    maxHeight: words[0] === "Retool" ? '4.8rem' : words[0] === "MySQL" ? '4rem' : words[0] === "BigQuery" ? '4.1rem' : '5rem', // Custom heights
+                    maxWidth: words[0] === "Retool" ? '100px' : words[0] === "MySQL" ? '82px' : words[0] === "Snowflake" ? '90px' : words[0] === "BigQuery" ? '75px' : '100px', // Custom widths
+                    padding: words[0] === "BigQuery" ? '6px' : '0', // Special padding for BigQuery logo
+                    marginLeft: words[0] === "Kubernetes" || words[0] === "Postgres" ? '-10px' : 
+                              words[0] === "MySQL" ? '10px' : 
+                              words[0] === "Snowflake" ? '-8px' : 
+                              words[0] === "BigQuery" ? '-3px' : 
+                              words[0] === "Retool" ? '-14px' : '0', // Custom shifts for alignment
+                    filter: 0 === currentIndex ? 'none' : 'grayscale(60%)' // Apply grayscale to non-current logos
+                  }}
+                />
+              )}
+            </div>
+            <span className="text-6xl md:text-7xl font-bold min-w-[28rem] inline-block" style={{ 
+              marginLeft: words[0] === "MySQL" ? '-5px' : 
+                        words[0] === "Snowflake" ? '-10px' : 
+                        words[0] === "BigQuery" ? '5px' : 
+                        words[0] === "Retool" ? '-8px' : 
+                        words[0] === "Metabase" || words[0] === "Looker" || words[0] === "Clickhouse" || words[0] === "S3" ? '-5px' : 
+                        words[0] === "MCP" ? '-15px' : '-15px', 
+              fontSize: "6rem" 
+            }}>{words[0]}</span>
           </div>
           
           {/* Render all regular words */}
@@ -242,35 +283,55 @@ const WordCarousel = () => {
             return (
               <div 
                 key={`word-${word}-${idx}-${currentIndex}`} // Include currentIndex in key to force re-render
-                className="h-[5.0rem] flex items-center gap-3 absolute w-full left-0" 
+                className="h-[7.5rem] flex items-center absolute w-full left-0" 
                 style={{
                   // Position each word at its index for scrolling animation
-                  top: `${idx * 5.0}rem`,
+                  top: `${idx * 7.5}rem`,
                   opacity: isCurrent ? 1 : 
-                          isNext || isPrevious ? 0.3 : 0, // Show current, prev and next words
+                          isNext || isPrevious ? 0.7 : 
+                          idx === (currentIndex + 2) % words.length || idx === (currentIndex - 2 + words.length) % words.length ? 0.4 : 0, // Show 2 prev and 2 next words with higher contrast
                   color: isCurrent ? wordColors[word as keyof typeof wordColors] : 
-                          isPrevious || isNext ? '#8E9196' : 'inherit',
+                          isPrevious || isNext || idx === (currentIndex + 2) % words.length || idx === (currentIndex - 2 + words.length) % words.length ? '#8E9196' : 'inherit',
                   background: 'transparent',
-                  transition: 'opacity 600ms ease-in-out, color 800ms ease-in-out, background 800ms ease-in-out, transform 800ms ease-in-out',
+                  transition: 'opacity 800ms cubic-bezier(0.4, 0, 0.2, 1), color 800ms cubic-bezier(0.4, 0, 0.2, 1), background 800ms cubic-bezier(0.4, 0, 0.2, 1), transform 800ms cubic-bezier(0.4, 0, 0.2, 1)',
                   pointerEvents: 'none' // Prevent click events on words
                 }}
               >
-                {/* Word text */}
-                <span className="text-5xl md:text-7xl font-bold min-w-[7rem] inline-block">{word}</span>
+                {/* Logo with spacing - now comes first */}
+                <div className="flex items-center justify-end" style={{ width: '130px', marginRight: '15px' }}>
+                  {logos[word as keyof typeof logos] && (
+                    <img 
+                      src={logos[word as keyof typeof logos]} 
+                      alt={`${word} logo`} 
+                      className="max-w-[120px] h-[5rem] object-contain"
+                      style={{ 
+                        opacity: isCurrent ? 1 : 0.4, // Reduced opacity for non-current words
+                        backgroundColor: word === "S3" || word === "SSH" ? 'transparent' : 'inherit',
+                        pointerEvents: 'none', // Prevent any click events on logos
+                        maxHeight: word === "Retool" ? '4.8rem' : word === "MySQL" ? '4rem' : word === "BigQuery" ? '4.1rem' : '5rem', // Custom heights
+                        maxWidth: word === "Retool" ? '100px' : word === "MySQL" ? '82px' : word === "Snowflake" ? '90px' : word === "BigQuery" ? '75px' : '100px', // Custom widths
+                        padding: word === "BigQuery" ? '6px' : '0', // Special padding for BigQuery logo
+                        marginLeft: word === "Kubernetes" || word === "Postgres" ? '-10px' : 
+                                   word === "MySQL" ? '10px' : 
+                                   word === "Snowflake" ? '-8px' : 
+                                   word === "BigQuery" ? '-3px' : 
+                                   word === "Retool" ? '-14px' : '0', // Custom shifts for alignment
+                        filter: isCurrent ? 'none' : 'grayscale(60%)' // Apply grayscale to non-current logos
+                      }}
+                    />
+                  )}
+                </div>
                 
-                {/* Logo with spacing */}
-                {logos[word as keyof typeof logos] && (
-                  <img 
-                    src={logos[word as keyof typeof logos]} 
-                    alt={`${word} logo`} 
-                    className="max-w-[12rem] h-[4.2rem] object-contain ml-0"
-                    style={{ 
-                      opacity: 1,
-                      backgroundColor: word === "S3" ? 'transparent' : 'inherit',
-                      pointerEvents: 'none' // Prevent any click events on logos
-                    }}
-                  />
-                )}
+                {/* Word text */}
+                <span className="text-6xl md:text-7xl font-bold min-w-[28rem] inline-block" style={{ 
+                  marginLeft: word === "MySQL" ? '-5px' : 
+                            word === "Snowflake" ? '-10px' : 
+                            word === "BigQuery" ? '5px' : 
+                            word === "Retool" ? '-8px' : 
+                            word === "Metabase" || word === "Looker" || word === "Clickhouse" || word === "S3" ? '-5px' : 
+                            word === "MCP" ? '-15px' : '-15px', 
+                  fontSize: "6rem" 
+                }}>{word}</span>
               </div>
             );
           })}
@@ -289,11 +350,17 @@ const WordCarousel = () => {
     <div 
       className="flex flex-col items-center justify-center bg-white text-black min-h-screen"
       style={{ 
-        paddingBottom: "15vh", // Push content up from bottom by 15% of viewport height
+        padding: 0,
+        height: "100vh", // Use full viewport height
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center", // Center content vertically
+        paddingBottom: "70px" // Shift content down further
       }}
       onClick={(e) => e.stopPropagation()} // Stop event propagation
     >
-      <header className="absolute top-6 left-8">
+      <header className="absolute top-16 left-20">
         <img 
           src="/lovable-uploads/165a663c-4cc0-4f1d-884a-1f33303936d0.png" 
           alt="Logo" 
@@ -313,34 +380,55 @@ const WordCarousel = () => {
         />
       </header>
       
-      <div className="flex flex-col items-center justify-start">
-        {/* Main container for headline with vertically centered alignment */}
-        <div className="flex items-center justify-center mb-2 px-16">
-          {/* Added margin to center the content horizontally */}
-          <div className="text-5xl md:text-7xl font-bold whitespace-nowrap pr-6 ml-16">
-            Stop worrying about
+      <div className="flex flex-col mx-auto" style={{ maxWidth: "1400px", marginTop: "80px", marginLeft: "5%" }}>
+        {/* Main container with a consistent width that will be used for both elements */}
+        <div className="w-full px-0">
+          {/* Create a common container that'll be used for both headline and description */}
+          <div className="flex flex-col">
+            {/* Create a container with consistent width for both headline and description */}
+            <div style={{ marginLeft: "0rem", width: "1550px" }}>
+              {/* Headline container */}
+              <div className="flex flex-nowrap items-center mb-8 whitespace-nowrap" id="headline-container">
+                {/* Headline text - no wrapping for single line layout */}
+                <div id="headline-text" className="text-6xl md:text-7xl font-bold whitespace-nowrap" style={{ paddingTop: '0.5rem', fontSize: "6rem", marginLeft: "60px", marginTop: "0", position: "relative", top: "2.4rem" }}>
+                  Stop worrying about
+                </div>
+                
+                {/* Carousel with fixed size - positioned to align the current word */}
+                <div 
+                  className="inline-block relative overflow-visible w-[1200px] h-[38rem] ml-0 -translate-x-6"
+                  style={{ 
+                    boxShadow: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    background: 'transparent'
+                  }}
+                  onClick={preventDefaultBehavior} // Prevent any click events from causing navigation
+                >
+                  {renderCarousel()}
+                  <div className="absolute bottom-0 left-0 w-[1250px] h-[16rem] bg-gradient-to-t from-white from-0% via-white via-60% to-transparent z-10 pointer-events-none" style={{marginBottom: "-2rem"}}></div>
+                  <div className="absolute top-0 left-0 w-[1250px] h-[8rem] bg-gradient-to-b from-white from-0% via-white via-40% to-transparent z-10 pointer-events-none"></div>
+                </div>
+              </div>
+              
+              {/* Description container using the same width container */}
+              <div className="mt-24" id="description-container">
+                <div className="text-4xl md:text-5xl text-left transition-opacity duration-800 font-medium"
+                    style={{ 
+                      width: "96%",
+                      marginLeft: "60px",
+                      minHeight: "240px", /* Increased height for larger text */
+                      paddingTop: "4px", /* Add slight padding to maintain vertical alignment */
+                      paddingBottom: "4px", /* Add slight padding to maintain vertical alignment */
+                      lineHeight: "1.35", /* Slightly increased line height for better readability */
+                      color: currentIndex >= 0 ? wordColors[words[currentIndex] as keyof typeof wordColors] : '#6B7280',
+                      overflowWrap: "break-word" /* Ensure long words break properly */
+                    }}>
+                  {currentIndex >= 0 && descriptions[words[currentIndex] as keyof typeof descriptions]}
+                </div>
+              </div>
+            </div>
           </div>
-          
-          {/* Carousel with fixed size - positioned to align the current word */}
-          <div 
-            className="inline-block relative overflow-hidden w-[500px] h-[15rem]" 
-            style={{ 
-              marginTop: '0rem',
-              boxShadow: 'none',
-              border: 'none',
-              outline: 'none',
-              background: 'transparent'
-            }}
-            onClick={preventDefaultBehavior} // Prevent any click events from causing navigation
-          >
-            {renderCarousel()}
-          </div>
-        </div>
-        
-        <div className="w-full max-w-4xl px-6 mt-10">
-          <p className="text-2xl md:text-3xl text-gray-600 text-center transition-opacity duration-800">
-            {currentIndex >= 0 && descriptions[words[currentIndex] as keyof typeof descriptions]}
-          </p>
         </div>
       </div>
     </div>
